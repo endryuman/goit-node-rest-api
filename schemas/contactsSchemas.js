@@ -6,7 +6,7 @@ export const createContactSchema = (data) =>
     .keys({
       name: Joi.string().min(2).max(15).required(),
       email: Joi.string().email().required(),
-      phone: Joi.number().required(),
+      phone: Joi.string().required(),
       favorite: Joi.boolean(),
     })
     .validate(data);
@@ -17,7 +17,7 @@ export const updateContactSchema = (data) =>
     .keys({
       name: Joi.string().min(2).max(15),
       email: Joi.string().email(),
-      phone: Joi.number(),
+      phone: Joi.string(),
     })
     .validate(data);
 
