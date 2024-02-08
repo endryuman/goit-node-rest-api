@@ -8,19 +8,25 @@ import {
   updateStatusContact,
 } from "../controllers/contactsControllers.js";
 import { isIdValid } from "../middlewares/isIdValid.js";
+import checkToken from "../middlewares/checkToken.js";
 
 const contactsRouter = express.Router();
 
-contactsRouter.get("/", getAllContacts);
+contactsRouter.get("/", checkToken, getAllContacts);
 
-contactsRouter.get("/:id", isIdValid, getOneContact);
+contactsRouter.get("/:id", checkToken, isIdValid, getOneContact);
 
-contactsRouter.delete("/:id", isIdValid, deleteContact);
+contactsRouter.delete("/:id", checkToken, isIdValid, deleteContact);
 
-contactsRouter.post("/", createContact);
+contactsRouter.post("/", checkToken, createContact);
 
-contactsRouter.put("/:id", isIdValid, updateContact);
+contactsRouter.put("/:id", checkToken, isIdValid, updateContact);
 
-contactsRouter.patch("/:id/favorite", isIdValid, updateStatusContact);
+contactsRouter.patch(
+  "/:id/favorite",
+  checkToken,
+  isIdValid,
+  updateStatusContact
+);
 
 export default contactsRouter;
