@@ -4,6 +4,8 @@ import { User } from "../models/userModel.js";
 import { signupUserSchema } from "../schemas/usersSchemas.js";
 import { checkUserExists } from "../services/usersServices.js";
 import HttpError from "../helpers/HttpError.js";
+import multer from "multer";
+import { v4 } from "uuid";
 
 export const checkSignupData = catchAsync(async (req, res, next) => {
   const { value, error } = signupUserSchema(req.body);
@@ -41,3 +43,27 @@ export const checkLoginData = catchAsync(async (req, res, next) => {
 
   next();
 });
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cbk) => {
+    cbk(null, "tpm");
+  },
+  filename: (req, file, cbk) => {
+    const extension = file.mimetype.split("/")[1];
+
+    cbk(null, `${req.user.id}-${v4()}.${extension}`);
+  },
+});
+
+const multerFilter = (req, file, cbk) => {
+  if (file.mimetype.startsWith("image/")) {
+    cbk(null, true);
+  } else {
+    cbk(new HttpError(400, "Please, upload images only"), false);
+  }
+};
+
+export const uploadAvatar = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+}).single("avatar");
