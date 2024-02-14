@@ -65,7 +65,10 @@ export const updateAvatar = async (req, res, next) => {
   const { _id } = req.user;
   try {
     if (!req.file) {
-      throw new HttpError(400, "Please, attach avatar.It is required.");
+      res
+        .status(400)
+        .json({ message: "Please, attach avatar.It is required." });
+      return;
     }
     const { path: tmpUpload, originalname } = req.file;
 
