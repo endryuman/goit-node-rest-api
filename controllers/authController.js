@@ -1,6 +1,12 @@
 import HttpError from "../helpers/HttpError.js";
 import { User } from "../models/userModel.js";
-import { changeAvatar, logining, register } from "../services/usersServices.js";
+import {
+  changeAvatar,
+  logining,
+  register,
+  resendVerify,
+  verification,
+} from "../services/usersServices.js";
 
 export const signup = async (req, res, next) => {
   const value = req.body;
@@ -15,6 +21,44 @@ export const signup = async (req, res, next) => {
   } catch (err) {
     if (err.status === 409) {
       return res.status(409).json({
+        message: err.message,
+      });
+    } else {
+      next(HttpError(err.status));
+    }
+  }
+};
+
+export const verifyEmail = async (req, res, next) => {
+  const { verificationToken } = req.params;
+  try {
+    await verification(verificationToken);
+
+    res.json({
+      message: "Verification successful",
+    });
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(409).json({
+        message: err.message,
+      });
+    } else {
+      next(HttpError(err.status));
+    }
+  }
+};
+
+export const resendVerifyEmail = async (req, res, next) => {
+  const { email } = req.body;
+  try {
+    await resendVerify(email);
+
+    res.json({
+      message: "Verification email sent",
+    });
+  } catch (err) {
+    if (err.status === 404 || err.status === 400) {
+      return res.status(err.status).json({
         message: err.message,
       });
     } else {

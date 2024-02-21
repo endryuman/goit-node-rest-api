@@ -1,7 +1,10 @@
 import bcryptjs from "bcryptjs";
 import { catchAsync } from "../helpers/catchAsync.js";
 import { User } from "../models/userModel.js";
-import { signupUserSchema } from "../schemas/usersSchemas.js";
+import {
+  signupUserSchema,
+  verificationEmailSchema,
+} from "../schemas/usersSchemas.js";
 import { checkUserExists } from "../services/usersServices.js";
 import HttpError from "../helpers/HttpError.js";
 import multer from "multer";
@@ -14,6 +17,18 @@ export const checkSignupData = catchAsync(async (req, res, next) => {
       message: error.message,
     });
   await checkUserExists(value.email);
+
+  req.body = value;
+
+  next();
+});
+
+export const validateVerificationEmail = catchAsync(async (req, res, next) => {
+  const { value, error } = verificationEmailSchema(req.body);
+  if (error)
+    return res.status(400).json({
+      message: error.message,
+    });
 
   req.body = value;
 
